@@ -4,12 +4,19 @@
 
 //codice per il progetto di API
 
-//prototipi
+//prototypes
 void addent_f(char name[]);
 void delent_f(char name[]);
 void addrel_f(char name1[], char name2[], char rel[]);
 void delrel_f(char name1[], char name2[], char rel[]);
 void report_f();
+
+//struct
+typedef struct entity{
+    char name[20];
+    struct entity *relation_order;
+    struct entity *alphabetical_order;
+}entity;
 
 int main(){
     char end_text[]="end";
