@@ -4,13 +4,6 @@
 
 //codice per il progetto di API
 
-//prototypes
-void addent_f(char name[]);
-void delent_f(char name[]);
-void addrel_f(char name1[], char name2[], char rel[], relation** rel_list);
-void delrel_f(char name1[], char name2[], char rel[], relation** rel_list);
-void report_f();
-
 //struct
 typedef struct entity{
     char ent_name[20];
@@ -22,6 +15,13 @@ typedef struct relation{
     char rel_name[20];
     struct relation *next;
 }relation;
+
+//prototypes
+void addent_f(char name[]);
+void delent_f(char name[]);
+void addrel_f(char name1[], char name2[], char rel[], relation *rel_list);
+void delrel_f(char name1[], char name2[], char rel[], relation *rel_list);
+void report_f();
 
 int main(){
     char input_text[20];
@@ -57,7 +57,7 @@ int main(){
             temp_cursor=&rel;
             while(temp_cursor->next!=NULL){
                 temp_cursor=temp_cursor->next;
-                printf("%s", temp_cursor->rel_name);
+                printf("%s\n", temp_cursor->rel_name);
             }
         }
         else if(strcmp(input_text, "delrel")==0){
@@ -82,8 +82,8 @@ void delent_f(char name[]){
     printf("Deleting entity named %s\n", name);
 }
 
-void addrel_f(char name1[], char name2[], char rel[], relation** rel_list){
-    //printf("Adding <%s> relation from <%s> to <%s>\n",rel, name1, name2);
+void addrel_f(char name1[], char name2[], char rel[], relation* rel_list){
+    printf("Adding %s relation from %s to %s\n",rel, name1, name2);
     relation *newrel;
     relation *rel_cursor=rel_list;
 
@@ -100,7 +100,7 @@ void addrel_f(char name1[], char name2[], char rel[], relation** rel_list){
     rel_cursor->next=newrel;
 }
 
-void delrel_f(char name1[], char name2[], char rel[], relation** rel_list){
+void delrel_f(char name1[], char name2[], char rel[], relation* rel_list){
     printf("Adding %s relation from %s to %s\n",rel, name1, name2);
 }
 
