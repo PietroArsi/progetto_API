@@ -7,8 +7,8 @@
 //prototypes
 void addent_f(char name[]);
 void delent_f(char name[]);
-void addrel_f(char name1[], char name2[], char rel[], relation**);
-void delrel_f(char name1[], char name2[], char rel[], relation**);
+void addrel_f(char name1[], char name2[], char rel[], relation** rel_list);
+void delrel_f(char name1[], char name2[], char rel[], relation** rel_list);
 void report_f();
 
 //struct
