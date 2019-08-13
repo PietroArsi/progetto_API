@@ -17,13 +17,15 @@
 
 //Tengo traccia delle entita' in una hash table. I tipi di relazioni sono in una lista in ordine alfabetico
 //Ogni tipo di relazione ha un BST ordinato con to e from
+//Per la report, uso una lista in cui inserisco tutti gli elementi da stampare in ordine
+//ATTENZIONE: ogni volta che finisco la report devo liberare tutta la lista
 
 //struct
 
 typedef struct relation{
     char rel_name[100];
     struct relation *next;
-    struct relation_tree *tree;
+    struct relation_node *tree;
 }relation;
 
 typedef struct entity{
@@ -35,11 +37,19 @@ typedef struct relation_node{
     char from[100];
     char to[100];
     int relations;
-    struct relation_tree *p;
-    struct relation_tree *left;
-    struct relation_tree *right;
-    struct relation_tree *root;
+    struct relation_node *p;
+    struct relation_node *left;
+    struct relation_node *right;
+    struct relation_node *root;
 }relation_node;
+
+typedef struct toprint_list{
+    char idrel[100];
+    char ident[100];
+    int num_rel;
+    struct toprint_list *next;
+    struct toprint_list *prev;
+}toprint_list;
 
 //prototypes
 void addent_f(char name[], entity* ht_entities[] );
@@ -47,7 +57,7 @@ void delent_f(char name[], entity* ht_entities[]);
 void addrel_f(char name1[], char name2[], char rel[], relation *rel_list, entity* ht_entities[]);
 void addrel_f2(char name1[], char name2[], char rel[], relation *rel_list, entity* ht_entities[]);
 void delrel_f(char name1[], char name2[], char rel[], relation *rel_list, entity* ht_entities[]);
-void report_f();
+void report_f(relation *rel_list);
 int check_ent_hash(char name[], entity* ht_entities[]);
 int hash_function_entities(char name[]);
 void tree_insert(relation_node *tree, relation_node *relation);
@@ -101,7 +111,7 @@ int main(){
             delrel_f(param1, param2, param3, &rel, ht_entities);
         }
         else if(strcmp(input_text, "report")==0){
-            report_f();
+            report_f(&rel);
         }
     }while (strcmp(input_text, "end")!=0);
 
@@ -237,6 +247,8 @@ void addrel_f(char name1[], char name2[], char rel[], relation* rel_list, entity
                             newrel_node=malloc(sizeof(relation_node));
                             strcpy(newrel_node->to, name2);
                             strcpy(newrel_node->from, name1);
+                            newrel_node->left=NULL;
+                            newrel_node->right=NULL;
                             tree_insert(newrel->tree, newrel_node);
                         }
                     }
@@ -252,6 +264,8 @@ void addrel_f(char name1[], char name2[], char rel[], relation* rel_list, entity
                 newrel_node=malloc(sizeof(relation_node));
                 strcpy(newrel_node->to, name2);
                 strcpy(newrel_node->from, name1);
+                newrel_node->left=NULL;
+                newrel_node->right=NULL;
                 tree_insert(temp_cursor->tree, newrel_node);
             }
             else if(temp_cursor->next==NULL && positioned!=1){
@@ -265,6 +279,8 @@ void addrel_f(char name1[], char name2[], char rel[], relation* rel_list, entity
                 newrel_node=malloc(sizeof(relation_node));
                 strcpy(newrel_node->to, name2);
                 strcpy(newrel_node->from, name1);
+                newrel_node->left=NULL;
+                newrel_node->right=NULL;
                 tree_insert(newrel->tree, newrel_node);
             }
             if(temp_cursor->next!=NULL && positioned!=1){
@@ -278,7 +294,12 @@ void delrel_f(char name1[], char name2[], char rel[], relation* rel_list, entity
     
 }
 
-void report_f(){
+void report_f(relation *rel_list){
+    //creo la lista per stampare
+    toprint_list to_print;
+    toprint_list *print_cursor;
+    print_cursor=&to_print;
+
     
 }
 
@@ -348,5 +369,41 @@ int hash_function_entities(char name_to_hash[]){
 }
 
 void tree_insert(relation_node *tree, relation_node *relation){
+    //copio lo pseudocodice delle slides
 
+    relation_node *y=NULL;
+    relation_node *x=tree;
+    while(x!=NULL){
+        y=x;
+        if(strcmp(relation->to, x->to)<0){
+            x=x->left;
+        }
+        else if(strcmp(relation->to, x->to)>0){
+            x=x->right;
+        }
+        else if(strcmp(relation->to, x->to)==0){
+            //il to e' uguale allora smisto per from
+            if(strcmp(relation->from, x->from)<0){
+                x=x->left;
+            }
+            else if(strcmp(relation->from, x->from)>0){
+                x=x->right;
+            }
+            else if(strcmp(relation->from, x->from)==0){
+                //sia to che from sono uguali, allora esco senza fare nulla
+                return;
+            }
+        }
+    }
+    relation->p=y;
+    if(y==NULL){
+        //l'albero e' vuoto
+        tree=relation;
+    }
+    else if(strcmp(relation->to, y->to)<0){
+        y->left=relation;
+    }
+    else{
+        y->right=relation;
+    }
 }
