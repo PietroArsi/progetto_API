@@ -31,7 +31,7 @@ typedef struct entity{
     struct entity *next;
 }entity;
 
-typedef struct relation_tree{
+typedef struct relation_node{
     char from[100];
     char to[100];
     int relations;
@@ -39,7 +39,7 @@ typedef struct relation_tree{
     struct relation_tree *left;
     struct relation_tree *right;
     struct relation_tree *root;
-}relation_tree;
+}relation_node;
 
 //prototypes
 void addent_f(char name[], entity* ht_entities[] );
@@ -50,6 +50,7 @@ void delrel_f(char name1[], char name2[], char rel[], relation *rel_list, entity
 void report_f();
 int check_ent_hash(char name[], entity* ht_entities[]);
 int hash_function_entities(char name[]);
+void tree_insert(relation_node *tree, relation_node *relation);
 
 int main(){
 
@@ -197,6 +198,7 @@ void addrel_f(char name1[], char name2[], char rel[], relation* rel_list, entity
     relation * newrel;
     newrel=malloc(sizeof(relation));
     strcpy(newrel->rel_name,rel);
+    newrel->tree=NULL;
 
     //scorro la lista con un cursore temporaneo
     relation *temp_cursor;
@@ -216,33 +218,54 @@ void addrel_f(char name1[], char name2[], char rel[], relation* rel_list, entity
 
         do{
             if(strcmp(temp_cursor->rel_name,newrel->rel_name)<0){
-                if(temp_cursor->next==NULL){
-                    //sono all'ultimo elemento
-                    temp_cursor->next=newrel;
-                    newrel->next=NULL;
-                    positioned=1;
-                }
-                else if(temp_cursor->next!=NULL && strcmp(temp_cursor->next->rel_name,newrel->rel_name)>0){
+                // if(temp_cursor->next==NULL){
+                //     //sono all'ultimo elemento
+                //     temp_cursor->next=newrel;
+                //     newrel->next=NULL;
+                //     positioned=1;
+                // }
+                if(temp_cursor->next!=NULL && strcmp(temp_cursor->next->rel_name,newrel->rel_name)>0){
                     //ho trovato dove metterlo ma devo verificare di star monitorando entrambe le entita'
                     if(check_ent_hash(name1, ht_entities)==1){
                         if(check_ent_hash(name2, ht_entities)==1){
                             newrel->next=temp_cursor->next;
                             temp_cursor->next=newrel;
                             positioned=1;
+
+                            //inserisco la relazione nell'albero
+                            relation_node *newrel_node;
+                            newrel_node=malloc(sizeof(relation_node));
+                            strcpy(newrel_node->to, name2);
+                            strcpy(newrel_node->from, name1);
+                            tree_insert(newrel->tree, newrel_node);
                         }
                     }
                 }
             }
-            if(strcmp(temp_cursor->rel_name,newrel->rel_name)==0){
-                //se la relazione esiste gia' allora esco senza fare nulla e libero lo spazio
+            else if(strcmp(temp_cursor->rel_name,newrel->rel_name)==0){
+                //se la relazione esiste gia' allora aggiungo la relazione all'albero e libero lo spazio
                 free(newrel);
                 positioned=1;
+
+                //inserisco la relazione nell'albero
+                relation_node *newrel_node;
+                newrel_node=malloc(sizeof(relation_node));
+                strcpy(newrel_node->to, name2);
+                strcpy(newrel_node->from, name1);
+                tree_insert(temp_cursor->tree, newrel_node);
             }
-            if(temp_cursor->next==NULL && positioned!=1){
+            else if(temp_cursor->next==NULL && positioned!=1){
                 //sono all'ultimo elemento
                 temp_cursor->next=newrel;
                 newrel->next=NULL;
                 positioned=1;
+
+                //inserisco la relazione nell'albero
+                relation_node *newrel_node;
+                newrel_node=malloc(sizeof(relation_node));
+                strcpy(newrel_node->to, name2);
+                strcpy(newrel_node->from, name1);
+                tree_insert(newrel->tree, newrel_node);
             }
             if(temp_cursor->next!=NULL && positioned!=1){
                 temp_cursor=temp_cursor->next;
@@ -322,4 +345,8 @@ int hash_function_entities(char name_to_hash[]){
     }
 
     return valore;
+}
+
+void tree_insert(relation_node *tree, relation_node *relation){
+
 }
