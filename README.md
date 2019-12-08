@@ -1,3 +1,3 @@
-<h1>Progetto API<h1>
+<h1>Progetto API<br>
 
-This is a project for the university. If you are reading this, please don't share my code.
+This is my solution for the project of Algorithms
