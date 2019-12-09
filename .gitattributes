@@ -1,2 +1,2 @@
-*.out linguist-detectable=false
-*.in linguist-detectable=false
+*.out linguist-detectable=False
+*.in linguist-detectable=False
