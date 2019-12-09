@@ -1,4 +1,4 @@
 *.out linguist-detectable=False
 *.in linguist-detectable=False
 *.md linguist-detectable=False
-inputs/suites/* linguist-detectable=False
+inputs/suites/*.* linguist-detectable=False
